@@ -13,13 +13,14 @@ class PictureWriter:
     _atom_esetroot = None
     _conn = None
 
-    def __init__(self, image_manipulator: ImageManipulator):
+    def __init__(self, image_manipulator: ImageManipulator, display=None):
         super().__init__()
         self.logger = logging.getLogger(self.__class__.__name__)
         self._image_manipulator = image_manipulator
+        self._display = display or os.environ.get("DISPLAY")
 
-    def connect(self, display=None):
-        self._conn = xcffib.connect(display=display or os.environ.get("DISPLAY"))
+    def connect(self):
+        self._conn = xcffib.connect(display=self._display)
 
         # don't remove pixmap after disconnecting
         self._conn.core.SetCloseDownMode(xcffib.xproto.CloseDown.RetainPermanent)

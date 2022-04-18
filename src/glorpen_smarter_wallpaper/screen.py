@@ -52,11 +52,11 @@ class MonitorInspector:
     _conn: typing.Optional[xcffib.Connection]
     _display: str
 
-    def __init__(self, display=os.environ.get("DISPLAY")):
+    def __init__(self, display=None):
         super().__init__()
         self.logger = logging.getLogger(self.__class__.__name__)
 
-        self._display = display
+        self._display = display or os.environ.get("DISPLAY")
 
     def connect(self):
         self._conn = xcffib.connect(self._display)
