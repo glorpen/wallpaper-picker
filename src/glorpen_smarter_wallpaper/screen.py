@@ -32,19 +32,6 @@ def _randr_rotation_as_mirror(rotation) -> Mirror:
         return "y"
     return None
 
-
-@dataclasses.dataclass
-class Offset:
-    x: int
-    y: int
-
-
-@dataclasses.dataclass
-class Size:
-    width: int
-    height: int
-
-
 @dataclasses.dataclass
 class Output(Offset, Size):
     name: str
