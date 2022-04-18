@@ -10,21 +10,7 @@ from xcffib.randr import Rotation as RandrRotation
 
 from glorpen_smarter_wallpaper.models import Offset, Size
 
-Rotation = typing.Literal[0, 90, 180, 270]
 Mirror = typing.Optional[typing.Literal['x', 'y']]
-
-
-def _randr_rotation_as_degrees(rotation) -> Rotation:
-    if rotation & RandrRotation.Rotate_0:
-        return 0
-    if rotation & RandrRotation.Rotate_90:
-        return 90
-    if rotation & RandrRotation.Rotate_180:
-        return 180
-    if rotation & RandrRotation.Rotate_270:
-        return 270
-
-    raise Exception("Unknown rotation")
 
 
 def _randr_rotation_as_mirror(rotation) -> Mirror:
@@ -38,7 +24,6 @@ def _randr_rotation_as_mirror(rotation) -> Mirror:
 @dataclasses.dataclass
 class Output(Offset, Size):
     name: str
-    rotation: Rotation
     mirror: Mirror
 
 
@@ -87,7 +72,6 @@ class MonitorInspector:
                     y=crtc_info.y,
                     width=crtc_info.width,
                     height=crtc_info.height,
-                    rotation=_randr_rotation_as_degrees(crtc_info.rotation),
                     mirror=_randr_rotation_as_mirror(crtc_info.rotation)
                 ))
 
