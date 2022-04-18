@@ -38,7 +38,9 @@ def update_wallpaper(attr: Attr, image_chooser: ImageChooser, display: str = Non
 
 
 def _to_offset(data: str):
-    return Offset(*(int(i) for i in data.split("x")))
+    if data.lower() == "none":
+        return None
+    return Offset(*(int(i) for i in data.split(":")))
 
 
 def _cli_update_wallpaper(ns, attr, image_chooser: ImageChooser):
@@ -56,7 +58,7 @@ def _print_info_for_path(p: pathlib.Path, attr: Attr):
 
     print(f"Details for image {p}")
     if poi:
-        print(f"POI: {poi.x}x{poi.y}")
+        print(f"POI: x:{poi.x}, y:{poi.y}")
     else:
         print("POI: not set")
     print(f"Offensive: {'yes' if is_offensive else 'no'}")
@@ -72,10 +74,8 @@ def _cli_attr_set(ns, attr: Attr, image_chooser: ImageChooser):
     else:
         attr.set_poi(p, ns.poi)
 
-    if ns.offensive is True:
-        attr.set_offensive(p, True)
-    elif ns.not_offensive is True:
-        attr.set_offensive(p, False)
+    if ns.offensive is not None:
+        attr.set_offensive(p, ns.offensive)
 
     _print_info_for_path(p, attr)
 
@@ -83,6 +83,10 @@ def _cli_attr_set(ns, attr: Attr, image_chooser: ImageChooser):
 def _cli_attr_get(ns, attr, image_chooser: ImageChooser):
     p = image_chooser.get_file(ns.image.expanduser())
     _print_info_for_path(p, attr)
+
+
+def yes_no(v: str):
+    return v.lower() in ["y", "yes", "1", "t"]
 
 
 if __name__ == "__main__":
@@ -102,10 +106,8 @@ if __name__ == "__main__":
     pp = sp.add_parser("attr-set")
     pp.set_defaults(func=_cli_attr_set)
     pp.add_argument("image", type=pathlib.Path)
-    pp.add_argument("--poi", help="Point of interest - defaults to center of image", default=None, type=_to_offset)
-    pp.add_argument("--remove-poi", help="Remove POI if set", default=False, action="store_true")
-    pp.add_argument("--offensive", help="Mark as offensive, defaults to no", default=False, action="store_true")
-    pp.add_argument("--not-offensive", help="Mark as not offensive", default=False, action="store_true")
+    pp.add_argument("--poi", help="Set point of interest (X:Y or none)", default=None, type=_to_offset)
+    pp.add_argument("--offensive", help="Mark as offensive or not", default=None, type=yes_no)
 
     pp = sp.add_parser("attr-get")
     pp.set_defaults(func=_cli_attr_get)
