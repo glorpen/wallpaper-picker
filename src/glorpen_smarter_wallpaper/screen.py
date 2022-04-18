@@ -8,6 +8,8 @@ import xcffib.randr
 import xcffib.xproto
 from xcffib.randr import Rotation as RandrRotation
 
+from glorpen_smarter_wallpaper.models import Offset, Size
+
 Rotation = typing.Literal[0, 90, 180, 270]
 Mirror = typing.Optional[typing.Literal['x', 'y']]
 
@@ -32,6 +34,7 @@ def _randr_rotation_as_mirror(rotation) -> Mirror:
         return "y"
     return None
 
+
 @dataclasses.dataclass
 class Output(Offset, Size):
     name: str
@@ -43,7 +46,7 @@ def get_atom_id(con, name):
     return con.core.InternAtom(False, len(name), name).reply().atom
 
 
-class MonitorInspector(object):
+class MonitorInspector:
     _root = None
     _ext_r = None
     _conn: typing.Optional[xcffib.Connection]
