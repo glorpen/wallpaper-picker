@@ -8,7 +8,7 @@ import xcffib.randr
 import xcffib.xproto
 from xcffib.randr import Rotation as RandrRotation
 
-from glorpen_smarter_wallpaper.models import Offset, Size
+from glorpen.wallpaper_picker.models import Offset, Size
 
 Flip = typing.Optional[typing.Literal['x', 'y']]
 

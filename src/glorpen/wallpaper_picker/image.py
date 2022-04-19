@@ -8,8 +8,8 @@ import typing
 import PIL.Image
 import xattr
 
-from glorpen_smarter_wallpaper.models import Offset, Size
-from glorpen_smarter_wallpaper.screen import Output
+from glorpen.wallpaper_picker.models import Offset, Size
+from glorpen.wallpaper_picker.screen import Output
 
 
 @dataclasses.dataclass

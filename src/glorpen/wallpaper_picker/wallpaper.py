@@ -4,8 +4,8 @@ import typing
 
 import xcffib.xproto
 
-from glorpen_smarter_wallpaper.image import Wallpaper, ImageManipulator
-from glorpen_smarter_wallpaper.screen import get_atom_id
+from glorpen.wallpaper_picker.image import Wallpaper, ImageManipulator
+from glorpen.wallpaper_picker.screen import get_atom_id
 
 
 class PictureWriter:

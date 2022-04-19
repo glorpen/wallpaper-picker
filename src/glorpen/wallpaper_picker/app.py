@@ -4,10 +4,10 @@ import itertools
 import logging
 import pathlib
 
-from glorpen_smarter_wallpaper.image import ImageChooser, Attr, ImageManipulator, Wallpaper
-from glorpen_smarter_wallpaper.models import Offset
-from glorpen_smarter_wallpaper.screen import MonitorInspector
-from glorpen_smarter_wallpaper.wallpaper import PictureWriter
+from glorpen.wallpaper_picker.image import ImageChooser, Attr, ImageManipulator, Wallpaper
+from glorpen.wallpaper_picker.models import Offset
+from glorpen.wallpaper_picker.screen import MonitorInspector
+from glorpen.wallpaper_picker.wallpaper import PictureWriter
 
 
 def update_wallpaper(attr: Attr, image_chooser: ImageChooser, display: str = None, offensive: bool = False):
