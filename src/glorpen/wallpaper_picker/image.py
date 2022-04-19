@@ -67,9 +67,9 @@ class ImageManipulator:
 
         image = image.crop((offset.x, offset.y, offset.x + cropped_size.width, offset.y + cropped_size.height))
 
-        if wallpaper.monitor.flip is "x":
+        if wallpaper.monitor.flip == "x":
             image = image.transpose(PIL.Image.FLIP_LEFT_RIGHT)
-        elif wallpaper.monitor.flip is "y":
+        elif wallpaper.monitor.flip == "y":
             image = image.transpose(PIL.Image.FLIP_TOP_BOTTOM)
 
         image = image.resize((wallpaper.monitor.width, wallpaper.monitor.height), resample=PIL.Image.LANCZOS)
