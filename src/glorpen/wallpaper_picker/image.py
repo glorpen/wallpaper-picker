@@ -97,8 +97,14 @@ class Attr:
             except OSError:
                 pass
 
-    def set_offensive(self, path: pathlib.Path, value: bool):
-        xattr.set(path, self._xattr_offensive, str(value))
+    def set_offensive(self, path: pathlib.Path, value: typing.Optional[bool]):
+        if value is None:
+            try:
+                xattr.remove(path, self._xattr_offensive)
+            except OSError:
+                pass
+        else:
+            xattr.set(path, self._xattr_offensive, str(value))
 
     def is_offensive(self, path: pathlib.Path):
         try:

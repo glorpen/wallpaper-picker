@@ -1,5 +1,7 @@
 #!/usr/bin/env python
+import argparse
 import itertools
+import logging
 import pathlib
 
 from glorpen.wallpaper_picker.image import ImageChooser, Attr, ImageManipulator, Wallpaper
@@ -36,9 +38,15 @@ def update_wallpaper(attr: Attr, image_chooser: ImageChooser, display: str = Non
 
 
 def to_offset(data: str):
-    if data.lower() == "none":
+    if data.lower() in ["none", "unset"]:
+        return False
+    return Offset(*(int(i) for i in data.split(",")))
+
+
+def to_optional_bool(data: str):
+    if data.lower() in ["none", "unset"]:
         return None
-    return Offset(*(int(i) for i in data.split(":")))
+    return data.lower() in ["y", "yes", "1", "t"]
 
 
 def cli_update_wallpaper(ns, attr, image_chooser: ImageChooser):
@@ -65,11 +73,9 @@ def print_info_for_path(p: pathlib.Path, attr: Attr):
 def cli_attr_set(ns, attr: Attr, image_chooser: ImageChooser):
     p = image_chooser.get_file(ns.image.expanduser())
 
-    if ns.poi is None:
-        if ns.remove_poi:
-            print("Clearing POI.")
-            attr.set_poi(p, None)
-    else:
+    if ns.poi is False:
+        attr.set_poi(p, None)
+    elif ns.poi is not None:
         attr.set_poi(p, ns.poi)
 
     if ns.offensive is not None:
@@ -83,5 +89,38 @@ def cli_attr_get(ns, attr, image_chooser: ImageChooser):
     print_info_for_path(p, attr)
 
 
-def yes_no(v: str):
-    return v.lower() in ["y", "yes", "1", "t"]
+def run():
+    p = argparse.ArgumentParser("wallpaper-picker")
+    p.add_argument("-v", "--verbose", action="count", default=0)
+    p.add_argument(
+        "--wallpaper-dir", "-w", help="Path to wallpapers directory, defaults to ~/wallpapers",
+        default=None, type=pathlib.Path
+    )
+    sp = p.add_subparsers()
+    pp = sp.add_parser("wallpaper")
+    pp.set_defaults(func=cli_update_wallpaper)
+    pp.add_argument("--display", "-d", help="Display to use, defaults to $DISPLAY")
+    pp.add_argument("--offensive", "-o", help="Include images marked as offensive", action="store_true", default=False)
+
+    pp = sp.add_parser("attr-set")
+    pp.set_defaults(func=cli_attr_set)
+    pp.add_argument("image", type=pathlib.Path)
+    pp.add_argument("--poi", help="Set point of interest (X:Y or none)", default=None, type=to_offset)
+    pp.add_argument("--offensive", help="Mark as offensive or not", default=None, type=to_optional_bool)
+
+    pp = sp.add_parser("attr-get")
+    pp.set_defaults(func=cli_attr_get)
+    pp.add_argument("image", type=pathlib.Path)
+
+    ns = p.parse_args()
+
+    levels = [logging.ERROR, logging.INFO, logging.DEBUG]
+    logging.basicConfig(level=levels[min(ns.verbose, len(levels) - 1)])
+
+    if not hasattr(ns, "func"):
+        p.print_help()
+        p.exit(1)
+
+    attr = Attr()
+    image_chooser = ImageChooser(wallpaper_dir=ns.wallpaper_dir.expanduser() if ns.wallpaper_dir else None, attr=attr)
+    ns.func(ns, attr=attr, image_chooser=image_chooser)
