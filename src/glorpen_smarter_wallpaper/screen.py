@@ -10,10 +10,10 @@ from xcffib.randr import Rotation as RandrRotation
 
 from glorpen_smarter_wallpaper.models import Offset, Size
 
-Mirror = typing.Optional[typing.Literal['x', 'y']]
+Flip = typing.Optional[typing.Literal['x', 'y']]
 
 
-def _randr_rotation_as_mirror(rotation) -> Mirror:
+def _randr_rotation_as_flip(rotation) -> Flip:
     if rotation & RandrRotation.Reflect_X:
         return "x"
     if rotation & RandrRotation.Reflect_Y:
@@ -24,7 +24,7 @@ def _randr_rotation_as_mirror(rotation) -> Mirror:
 @dataclasses.dataclass
 class Output(Offset, Size):
     name: str
-    mirror: Mirror
+    flip: Flip
 
 
 def get_atom_id(con, name):
@@ -72,7 +72,7 @@ class MonitorInspector:
                     y=crtc_info.y,
                     width=crtc_info.width,
                     height=crtc_info.height,
-                    mirror=_randr_rotation_as_mirror(crtc_info.rotation)
+                    flip=_randr_rotation_as_flip(crtc_info.rotation)
                 ))
 
         return tuple(ret)

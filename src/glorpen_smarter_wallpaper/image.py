@@ -66,6 +66,12 @@ class ImageManipulator:
         self.logger.debug(f"offset {offset}")
 
         image = image.crop((offset.x, offset.y, offset.x + cropped_size.width, offset.y + cropped_size.height))
+
+        if wallpaper.monitor.flip is "x":
+            image = image.transpose(PIL.Image.FLIP_LEFT_RIGHT)
+        elif wallpaper.monitor.flip is "y":
+            image = image.transpose(PIL.Image.FLIP_TOP_BOTTOM)
+
         image = image.resize((wallpaper.monitor.width, wallpaper.monitor.height), resample=PIL.Image.LANCZOS)
 
         return image
@@ -97,7 +103,7 @@ class Attr:
     def is_offensive(self, path: pathlib.Path):
         try:
             value = xattr.get(path, self._xattr_offensive)
-            return bool(value)
+            return value == b'True'
         except OSError:
             return False
 
