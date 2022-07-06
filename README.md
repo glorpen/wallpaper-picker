@@ -1,5 +1,12 @@
 # Wallpaper Picker
 
+| [Codeberg](https://codeberg.org/glorpen/wallpaper-picker)
+| Mirrors:
+    [GitLab](https://gitlab.com/glorpen/wallpaper-picker),
+    [GitHub](https://github.com/glorpen/wallpaper-picker),
+    [Bitbucket](https://bitbucket.org/glorpen/wallpaper-picker)
+|
+
 Randomize your wallpaper in a smarter way.
 
 Picker allows you to set X11 wallpaper, picked at random from wallpaper dir.
