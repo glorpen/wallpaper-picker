@@ -1,19 +1,37 @@
 #!/usr/bin/env python
 import argparse
+import functools
 import itertools
 import logging
+import os
 import pathlib
 
 from glorpen.wallpaper_picker.image import ImageChooser, Attr, ImageManipulator, Wallpaper
 from glorpen.wallpaper_picker.models import Offset
-from glorpen.wallpaper_picker.screen import MonitorInspector
-from glorpen.wallpaper_picker.wallpaper import PictureWriter
 
 
-def update_wallpaper(attr: Attr, image_chooser: ImageChooser, display: str = None, offensive: bool = False):
+def backend_sway(ns):
+    from glorpen.wallpaper_picker.backend.wayland import SwayMonitorInspector, SwaybgPictureWriter
     image_manipulator = ImageManipulator()
-    monitor_inspector = MonitorInspector(display=display)
-    picture_writer = PictureWriter(image_manipulator=image_manipulator, display=display)
+    return SwayMonitorInspector(), SwaybgPictureWriter(image_manipulator)
+
+
+def backend_xorg(ns):
+    from glorpen.wallpaper_picker.backend.xorg import XorgMonitorInspector, XorgPictureWriter
+    image_manipulator = ImageManipulator()
+    display = ns.display
+    return XorgMonitorInspector(display=display), XorgPictureWriter(image_manipulator=image_manipulator,
+                                                                    display=display)
+
+
+backends = {
+    "sway": backend_sway,
+    "xorg": backend_xorg,
+}
+
+
+def update_wallpaper(backend_factory, attr: Attr, image_chooser: ImageChooser, offensive: bool = False):
+    monitor_inspector, picture_writer = backend_factory()
 
     monitor_inspector.connect()
     try:
@@ -51,7 +69,7 @@ def to_optional_bool(data: str):
 
 def cli_update_wallpaper(ns, attr, image_chooser: ImageChooser):
     update_wallpaper(
-        display=ns.display,
+        backend_factory=functools.partial(ns.backend, ns=ns),
         offensive=ns.offensive,
         attr=attr,
         image_chooser=image_chooser
@@ -99,7 +117,14 @@ def run():
     sp = p.add_subparsers()
     pp = sp.add_parser("wallpaper")
     pp.set_defaults(func=cli_update_wallpaper)
-    pp.add_argument("--display", "-d", help="Display to use, defaults to $DISPLAY")
+
+    default_backend = "xorg"
+    if os.environ.get("XDG_SESSION_TYPE") == "wayland":
+        default_backend = "sway"
+
+    pp.add_argument("--backend", "-b", help="Backend to use", default=default_backend,
+                    choices=list(sorted(backends.keys())), type=backends.get)
+    pp.add_argument("--display", "-d", help="Display to use, defaults to $DISPLAY, only for XOrg backend")
     pp.add_argument("--offensive", "-o", help="Include images marked as offensive", action="store_true", default=False)
 
     pp = sp.add_parser("attr-set")

@@ -9,7 +9,7 @@
 
 Randomize your wallpaper in a smarter way.
 
-Picker allows you to set X11 wallpaper, picked at random from wallpaper dir.
+Picker allows you to set X11 & Wayland wallpaper, picked at random from wallpaper dir.
 
 For each image you can define POI (x,y coords) and then image will always be centered on given point - e.g. in portrait mode. 
 Images will be scaled up or down to match screen resolution.
