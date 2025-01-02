@@ -19,15 +19,15 @@ class SwayMonitorInspector(MonitorInspector):
     def get_screens(self) -> tuple[Output, ...]:
         ret = []
         for data in json.loads(subprocess.check_output(["swaymsg", "-t", "get_outputs"])):
-            mode = data["current_mode"]
             rect = data["rect"]
+            scale = data["scale"]
             ret.append(Output(
                 name=data["name"],
                 flip=None,
-                x=int(rect["x"] * data["scale"]),
-                y=int(rect["y"] * data["scale"]),
-                width=mode["width"],
-                height=mode["height"],
+                x=round(rect["x"] * scale),
+                y=round(rect["y"] * scale),
+                width=round(rect["width"] * scale),
+                height=round(rect["height"] * scale),
             ))
         return tuple(ret)
 
