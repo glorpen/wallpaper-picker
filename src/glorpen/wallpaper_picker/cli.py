@@ -130,7 +130,7 @@ def run():
     pp = sp.add_parser("attr-set")
     pp.set_defaults(func=cli_attr_set)
     pp.add_argument("image", type=pathlib.Path)
-    pp.add_argument("--poi", help="Set point of interest (X:Y or none)", default=None, type=to_offset)
+    pp.add_argument("--poi", help="Set point of interest (X,Y or none)", default=None, type=to_offset)
     pp.add_argument("--offensive", help="Mark as offensive or not", default=None, type=to_optional_bool)
 
     pp = sp.add_parser("attr-get")
